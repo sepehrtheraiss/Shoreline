@@ -8,13 +8,13 @@ int main(int argc, char** argv) {
     }
 
     Blocker b(argv[1]);
-   // b.printTable();
+    b.printTable();
     
     vector<pair<ipv4_t, port_t>> h;
     //ipv4_t ip;
     //struct in_addr ip;
 
-
+    /*
     string s("192.168.1.1");
     ipv4_t ip;// = (192 << 24UL) | (168 << 16UL) | (1 << 8UL) | 0;
     ip = inet_network(s.c_str());
@@ -36,6 +36,6 @@ int main(int argc, char** argv) {
     cout << ip << endl;
     h.push_back(make_pair(ip, 80));
     cout << "valid: " << b.valid(h.back().first, h.back().second) << endl;
-
+    */
     return 0;
 }

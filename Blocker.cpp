@@ -8,12 +8,11 @@ static ipv4_t cidr_to_mask(byte_t cidr)
     ipv4_t mask;
     if (cidr > 32) 
         return -1; /* Invalid bit count */
-
-    mask = (0xFFFFFFFFUL << (32 - cidr)) & 0xFFFFFFFFUL;
+    mask = (0xFFFFFFFF << (32 - cidr)) & 0xFFFFFFFF;
     return mask;
 }
 
-bool comp(node* a, node* b)
+static bool comp(node* a, node* b)
 {
     return(a->cidr > b->cidr);
 }
@@ -51,14 +50,14 @@ Blocker::Blocker(string file)
             buff =  buff.substr(index+1); 
             index = buff.find(" "); 
             cidr = atoi(buff.substr(0, index).c_str());
-            mask = cidr_to_mask(n->cidr);
+            mask = cidr_to_mask(cidr);
             net &= mask;
 
             /* get ports */
             buff = buff.substr(index+1);
             while((index = buff.find(" ")) != string::npos) {
                 port = atoi(buff.substr(0, index).c_str());
-                cout << ipstr << "/" <<(int)cidr<<":" << port << endl;
+                //cout << ipstr << "/" <<(int)cidr<<":" << port << endl;
                 n = GetNode(port, cidr);
                 if(!n) {
                     n = new node(cidr, mask);
@@ -103,10 +102,16 @@ node* Blocker::GetNode(port_t port, byte_t cidr)
 }
 void Blocker::printTable()
 {
+    in_addr ip;
     FOREACH_TABLE
-        std::cout << it->first << " => [";
+        std::cout << "\n" << it->first << " => [\n";
         for(node* n: it->second) {
-           printf("%s/%u, ",inet_ntoa(*(struct in_addr*)&n->mask), n->cidr);
+            ip.s_addr = htonl(n->mask);
+            cout << "cidr: " << (int)n->cidr << " mask: " << inet_ntoa(ip) << endl;
+            for(auto it : n->net) {
+               ip.s_addr = htonl(it.first);
+               cout << "\t net: " << inet_ntoa(ip) << endl;
+            }
         }
         cout << "]\n";
     END_TABLE
