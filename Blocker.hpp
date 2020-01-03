@@ -6,16 +6,18 @@
 #include <map>
 using namespace std;
 
-typedef uint32_t IPv4_t;
+typedef uint32_t ipv4_t;
 typedef uint16_t port_t;
 typedef uint8_t  byte_t;
 
+#define FOREACH_TABLE for (std::map<port_t,vector<node*>>::iterator it=table.begin(); it!=table.end(); ++it) {
+#define END_TABLE }
+
 typedef struct node {
-    IPv4_t net;
-    IPv4_t mask;
+    ipv4_t net;
+    ipv4_t mask;
     byte_t cidr;
-    vector<port_t> port;
-    string IP_str;
+    string ip_str;
 } node;
 
 class Blocker {
@@ -23,12 +25,11 @@ class Blocker {
         Blocker(void);
         Blocker(string file);
        ~Blocker(void);
-        bool valid(string IPv4_Port);
-        bool valid(string IPv4, string port);
-        bool valid(IPv4_t IP, port_t port);
+        bool valid(string ipv4_Port);
+        bool valid(string ipv4, string port);
+        bool valid(ipv4_t ip, port_t port);
         void printTable(void);
     private:
-        //vector<node*> net;
         map<port_t, vector<node*>> table;
 };
 #endif
