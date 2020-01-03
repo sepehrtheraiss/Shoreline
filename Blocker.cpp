@@ -36,35 +36,49 @@ Blocker::Blocker(string file)
         int index;
         string buff;
         node* n;
+        string ipstr;
+        ipv4_t net;
+        ipv4_t mask;
+        byte_t cidr;
         port_t port;
         while(getline(f, buff)) {
-            n = new node();
             /* get ip */
             index = buff.find("/");
-            n->ip_str = buff.substr(0, index);
-            //if(!inet_aton(n->ip_str.c_str(), (struct in_addr*)&n->net)) 
-             //   perror("Error inet_pton");
-             n->net = inet_network(n->ip_str.c_str());
+            ipstr = buff.substr(0, index);
+            net   = inet_network(ipstr.c_str());
 
             /* get cidr notation */
             buff =  buff.substr(index+1); 
             index = buff.find(" "); 
-            n->cidr = atoi(buff.substr(0, index).c_str());
-            n->mask = cidr_to_mask(n->cidr);
-            n->net &= n->mask;
+            cidr = atoi(buff.substr(0, index).c_str());
+            mask = cidr_to_mask(n->cidr);
+            net &= mask;
 
             /* get ports */
             buff = buff.substr(index+1);
             while((index = buff.find(" ")) != string::npos) {
                 port = atoi(buff.substr(0, index).c_str());
-                table[port].push_back(n);
+                n = GetNode(port, cidr);
+                if(!n) {
+                    n = new node(cidr, mask);
+                    n->net[net] = true;
+                    table[port].push_back(n);
+                } else {
+                    n->net[net] = true;
+                }
+                /* set to next port */
                 buff = buff.substr(index+1); 
             }
         }
-        for(map<port_t, vector<node*>>::iterator it = table.begin(); it != table.end();it++) {
+
+        /* sort in ascending for quick mask comparison.
+         * if higher mask matches then we dont need to 
+         * check for lower masks.
+         */
+        FOREACH_TABLE
             sort(it->second.begin(), it->second.end(), comp);
-        }
-        
+        END_TABLE 
+
         f.close();
     } catch(const ifstream::failure& e) {
         cout << "Exception: " << e.what() << endl;
@@ -72,12 +86,26 @@ Blocker::Blocker(string file)
 
 }
 
+node* Blocker::GetNode(port_t port, byte_t cidr)
+{
+    map<port_t, vector<node*>>::iterator it;
+    it = table.find(port);
+    if(it == table.end())
+        return NULL;
+    
+    for(node* n : it->second) {
+        if(n->cidr == cidr)
+            return n;
+    }
+
+    return NULL;
+}
 void Blocker::printTable()
 {
     FOREACH_TABLE
         std::cout << it->first << " => [";
         for(node* n: it->second) {
-           printf("%s/%u, ",n->ip_str.c_str(), n->cidr);
+           printf("%s/%u, ",inet_ntoa(*(struct in_addr*)&n->mask), n->cidr);
         }
         cout << "]\n";
     END_TABLE
@@ -90,17 +118,10 @@ Blocker::~Blocker()
 
 bool Blocker::valid(ipv4_t ip, port_t port)
 {
-    FOREACH_TABLE
-        if(it->first == port) {
-            printf("port %u\n", port);
-            printf("\nip\t\tmask\t\tnet\n");
-            for(node* n: it->second) {
-                printf("%u\t%u\t%u\n", ip, n->mask, n->net);
-                if((ip & n->mask) == n->net) {
-                    return true;
-                }
-            }
+    for(node* n : table[port]) {
+        if(n->net[ip & n->mask]) {
+            return true;
         }
-    END_TABLE
+    }
    return false;
 }

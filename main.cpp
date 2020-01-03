@@ -31,5 +31,11 @@ int main(int argc, char** argv) {
     h.push_back(make_pair(ip, 80));
     cout << "valid: " << b.valid(h.back().first, h.back().second) << endl;
 
+    ip = inet_network("10.0.0.1");
+    cout << "10.0.0.1" << endl; 
+    cout << ip << endl;
+    h.push_back(make_pair(ip, 80));
+    cout << "valid: " << b.valid(h.back().first, h.back().second) << endl;
+
     return 0;
 }

@@ -15,10 +15,11 @@ typedef uint8_t  byte_t;
 #define END_TABLE }
 
 typedef struct node {
-    ipv4_t net;
     byte_t cidr;
     ipv4_t mask;
-    string ip_str;
+    /* fast lookup for net ids under this cidr */
+    map<ipv4_t, bool> net;
+    node(byte_t c, ipv4_t m) : cidr(c), mask(m){}
 } node;
 
 class Blocker {
@@ -26,6 +27,7 @@ class Blocker {
         Blocker(void);
         Blocker(string file);
        ~Blocker(void);
+        node* GetNode(port_t port, byte_t cidr);
         bool valid(string ipv4_Port);
         bool valid(string ipv4, string port);
         bool valid(ipv4_t ip, port_t port);
