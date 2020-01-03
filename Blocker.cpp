@@ -37,6 +37,7 @@ Blocker::Blocker(string file)
         int index;
         string buff;
         node* n;
+        port_t port;
         while(getline(f, buff)) {
             n = new node();
             /* get ip */
@@ -52,13 +53,13 @@ Blocker::Blocker(string file)
             /* get ports */
             buff = buff.substr(index+1);
             while((index = buff.find(" ")) != string::npos) {
-                n->port.push_back(atoi(buff.substr(0, index).c_str()));
+                port = atoi(buff.substr(0, index).c_str());
+                table[port].push_back(n);
                 buff = buff.substr(index+1); 
             }
-            blist.push_back(n);
-
+            net.push_back(n);
         }
-        sort(blist.begin, blist.end, comp);
+        sort(net.begin(), net.end(), comp);
         f.close();
     } catch(const ifstream::failure& e) {
         cout << "Exception: " << e.what() << endl;
