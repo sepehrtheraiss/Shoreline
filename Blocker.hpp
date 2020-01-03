@@ -28,7 +28,7 @@ class Blocker {
         bool valid(IPv4_t IP, port_t port);
         void printTable(void);
     private:
-        vector<node*> net;
+        //vector<node*> net;
         map<port_t, vector<node*>> table;
 };
 #endif

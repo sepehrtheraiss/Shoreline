@@ -57,9 +57,13 @@ Blocker::Blocker(string file)
                 table[port].push_back(n);
                 buff = buff.substr(index+1); 
             }
-            net.push_back(n);
+            //net.push_back(n);
         }
-        sort(net.begin(), net.end(), comp);
+        //sort(net.begin(), net.end(), comp);
+        for(map<port_t, vector<node*>>::iterator it = table.begin(); it != table.end();it++) {
+            sort(it->second.begin(), it->second.end(), comp);
+        }
+        
         f.close();
     } catch(const ifstream::failure& e) {
         cout << "Exception: " << e.what() << endl;
