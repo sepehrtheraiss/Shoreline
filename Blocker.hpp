@@ -28,8 +28,6 @@ class Blocker {
         bool valid(IPv4_t IP, port_t port);
         void printTable(void);
     private:
-        /* stores the cidr notation from input */
-        map<byte_t, bool> cidr;
-        map<port_t, map<IPv4_t, bool>>table;
+        vector<node*> blist;
 };
 #endif

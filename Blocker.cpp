@@ -1,4 +1,5 @@
 #include "Blocker.hpp"
+#include <algorithm>
 #include <stdio.h>
 #include <string.h>
 #include <arpa/inet.h>
@@ -11,6 +12,11 @@ static IPv4_t cidr_to_mask(byte_t cidr)
 
     mask = (0xFFFFFFFFUL << (32 - cidr)) & 0xFFFFFFFFUL;
     return mask;
+}
+
+bool comp(node* a, node* b)
+{
+    return(a->cidr > b->cidr);
 }
 
 Blocker::Blocker(void)
@@ -48,11 +54,11 @@ Blocker::Blocker(string file)
             while((index = buff.find(" ")) != string::npos) {
                 n->port.push_back(atoi(buff.substr(0, index).c_str()));
                 buff = buff.substr(index+1); 
-                this->cidr[n->cidr] = true; 
-                table[n->port.back()] = 
             }
+            blist.push_back(n);
 
         }
+        sort(blist.begin, blist.end, comp);
         f.close();
     } catch(const ifstream::failure& e) {
         cout << "Exception: " << e.what() << endl;
