@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
     }
 
     Blocker b(argv[1]);
-    b.printTable();
+   // b.printTable();
     
     vector<pair<ipv4_t, port_t>> h;
     //ipv4_t ip;

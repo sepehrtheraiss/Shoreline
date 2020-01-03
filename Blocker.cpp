@@ -58,6 +58,7 @@ Blocker::Blocker(string file)
             buff = buff.substr(index+1);
             while((index = buff.find(" ")) != string::npos) {
                 port = atoi(buff.substr(0, index).c_str());
+                cout << ipstr << "/" <<(int)cidr<<":" << port << endl;
                 n = GetNode(port, cidr);
                 if(!n) {
                     n = new node(cidr, mask);
@@ -121,6 +122,9 @@ bool Blocker::valid(ipv4_t ip, port_t port)
     for(node* n : table[port]) {
         if(n->net[ip & n->mask]) {
             return true;
+        } else {
+            /* std::map adds entry even if it's not assigned */
+            n->net.erase(ip & n->mask);
         }
     }
    return false;
