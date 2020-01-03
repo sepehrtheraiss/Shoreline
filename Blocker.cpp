@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <stdio.h>
 #include <string.h>
-#include <arpa/inet.h>
 
 static ipv4_t cidr_to_mask(byte_t cidr)
 {
@@ -34,7 +33,6 @@ Blocker::Blocker(string file)
         }
         //f.exceptions ( ifstream::eofbit | ifstream::failbit | ifstream::badbit );
         //if ( (f.rdstate() & ifstream::failbit ) != 0 ) {
-        int err;
         int index;
         string buff;
         node* n;
@@ -44,12 +42,9 @@ Blocker::Blocker(string file)
             /* get ip */
             index = buff.find("/");
             n->ip_str = buff.substr(0, index);
-            if((err=inet_pton(AF_INET, n->ip_str.c_str(), &n->net))< 1) {
-                if(err < 0)
-                    perror("Error inet_pton");
-                else
-                    cerr << "Not in presentation format\n"; 
-            }
+            //if(!inet_aton(n->ip_str.c_str(), (struct in_addr*)&n->net)) 
+             //   perror("Error inet_pton");
+             n->net = inet_network(n->ip_str.c_str());
 
             /* get cidr notation */
             buff =  buff.substr(index+1); 
@@ -82,7 +77,7 @@ void Blocker::printTable()
     FOREACH_TABLE
         std::cout << it->first << " => [";
         for(node* n: it->second) {
-            printf("%s/%u, ",n->ip_str.c_str(), n->cidr);
+           printf("%s/%u, ",n->ip_str.c_str(), n->cidr);
         }
         cout << "]\n";
     END_TABLE
@@ -97,10 +92,11 @@ bool Blocker::valid(ipv4_t ip, port_t port)
 {
     FOREACH_TABLE
         if(it->first == port) {
-            printf("ip\t\tmask\t\tnet\n");
+            printf("port %u\n", port);
+            printf("\nip\t\tmask\t\tnet\n");
             for(node* n: it->second) {
                 printf("%u\t%u\t%u\n", ip, n->mask, n->net);
-                if(ip & n->mask == n->net) {
+                if((ip & n->mask) == n->net) {
                     return true;
                 }
             }

@@ -11,12 +11,25 @@ int main(int argc, char** argv) {
     b.printTable();
     
     vector<pair<ipv4_t, port_t>> h;
-    ipv4_t ip;
-    //string s("192.168.2.1");
+    //ipv4_t ip;
+    //struct in_addr ip;
 
-    inet_pton(AF_INET, "192.168.2.0", &ip);
+
+    string s("192.168.1.1");
+    ipv4_t ip;// = (192 << 24UL) | (168 << 16UL) | (1 << 8UL) | 0;
+    ip = inet_network(s.c_str());
+    cout << s << endl; 
+    cout << ip << endl;
     h.push_back(make_pair(ip, 80));
-    cout << "192.168.2.1:80\n";  
     cout << "valid: " << b.valid(h.back().first, h.back().second) << endl;
+
+    s.pop_back();
+    s += "20";
+    ip = inet_network(s.c_str());
+    cout << s << endl; 
+    cout << ip << endl;
+    h.push_back(make_pair(ip, 80));
+    cout << "valid: " << b.valid(h.back().first, h.back().second) << endl;
+
     return 0;
 }

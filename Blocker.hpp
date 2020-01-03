@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <arpa/inet.h>
 using namespace std;
 
 typedef uint32_t ipv4_t;
@@ -15,8 +16,8 @@ typedef uint8_t  byte_t;
 
 typedef struct node {
     ipv4_t net;
-    ipv4_t mask;
     byte_t cidr;
+    ipv4_t mask;
     string ip_str;
 } node;
 
