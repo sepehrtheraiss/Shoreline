@@ -41,43 +41,15 @@ Blocker::Blocker(string file)
         byte_t cidr;
         port_t port;
         while(getline(f, buff)) {
-            /* get ip */
-            index = buff.find("/");
-            ipstr = buff.substr(0, index);
-            net   = inet_network(ipstr.c_str());
-
-            /* get cidr notation */
-            buff =  buff.substr(index+1); 
-            index = buff.find(" "); 
-            cidr = atoi(buff.substr(0, index).c_str());
-            mask = cidr_to_mask(cidr);
-            net &= mask;
-
-            /* get ports */
-            buff = buff.substr(index+1);
-            while((index = buff.find(" ")) != string::npos) {
-                port = atoi(buff.substr(0, index).c_str());
-                //cout << ipstr << "/" <<(int)cidr<<":" << port << endl;
-                n = GetNode(port, cidr);
-                if(!n) {
-                    n = new node(cidr, mask);
-                    n->net[net] = true;
-                    table[port].push_back(n);
-                } else {
-                    n->net[net] = true;
-                }
-                /* set to next port */
-                buff = buff.substr(index+1); 
-            }
+            
+            
         }
 
         /* sort in ascending for quick mask comparison.
          * if higher mask matches then we dont need to 
          * check for lower masks.
          */
-        FOREACH_TABLE
             sort(it->second.begin(), it->second.end(), comp);
-        END_TABLE 
 
         f.close();
     } catch(const ifstream::failure& e) {
@@ -86,22 +58,74 @@ Blocker::Blocker(string file)
 
 }
 
-node* Blocker::GetNode(port_t port, byte_t cidr)
+
+/* if node not exists:
+ *  add new node
+ * else: add net
+ */
+void Blocker::AddNode(byte_t cidr, ipv4_t ip, port_t min, port_t max, bool forward)
 {
-    map<port_t, vector<node*>>::iterator it;
-    it = table.find(port);
-    if(it == table.end())
-        return NULL;
-    
-    for(node* n : it->second) {
+    node* n = this->GetNode(cidr);
+    if(!n) {
+        port_t mask = cidr_to_mask(cidr);
+        if(mask == -1) {
+            cerr << "cidr_to_mask: Invalid bit count\n";
+            return;
+        }
+        n = new node(cidr, mask);
+        net* t = new net(min, max, forward);
+        n->table[ip & mask] = t;
+        this->l.push_back(n);
+    } else {
+        n->table[ip & n->mask] = new net(min, max, forward);
+    }
+}
+
+node* Blocker::GetNode(byte_t cidr)
+{
+    for(node* n : this->l) {
         if(n->cidr == cidr)
             return n;
-    }
+    }    
 
     return NULL;
 }
+
+void Blocker::RemoveNode(byte_t cidr)
+{
+    node* n = this->GetNode(cidr);
+    if(!n)
+        return;
+    for(map<ipv4_t, net*>::iterator it = n->table.begin(); it != n->table.end(); it++) {
+        free(it->second);
+    }
+    n->table.clear();
+}
+
+void Blocker::RemoveNet(ipv4_t ip)
+{
+    node* n = this->FindNode(ip);
+    if(!n)
+        return;
+    n->table.erase(ip & n->mask);
+}
+
+node* Blocker::FindNode(ipv4_t ip)
+{
+    ipv4_t net;
+    map<ipv4_t, struct net*>::iterator it;
+    for(node* n : this->l) {
+        net = n->mask & ip;
+        it = n->table.find(net);
+        if(it != n->table.end())
+            return n;
+    }    
+    return NULL;
+}
+
 void Blocker::printTable()
 {
+    /*
     in_addr ip;
     FOREACH_TABLE
         std::cout << "\n" << it->first << " => [\n";
@@ -115,6 +139,7 @@ void Blocker::printTable()
         }
         cout << "]\n";
     END_TABLE
+    */
 }
 
 Blocker::~Blocker()
@@ -124,13 +149,7 @@ Blocker::~Blocker()
 
 bool Blocker::valid(ipv4_t ip, port_t port)
 {
-    for(node* n : table[port]) {
-        if(n->net[ip & n->mask]) {
-            return true;
-        } else {
-            /* std::map adds entry even if it's not assigned */
-            n->net.erase(ip & n->mask);
-        }
-    }
-   return false;
+   node* n = this->FindNode(ip);
+   net* t = n->table[ip & n->mask];
+   return (port >= t->min && port <= t->max && t->forward);
 }
