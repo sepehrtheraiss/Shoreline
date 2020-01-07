@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 #include <arpa/inet.h>
+#include <string.h>
+
 using namespace std;
 
 typedef uint32_t ipv4_t;
@@ -12,14 +14,10 @@ typedef uint16_t port_t;
 typedef uint8_t  byte_t;
 
 typedef struct net {
-    struct in_addr ip;
     port_t min;
     port_t max;
     char tag;
-    net(ipv4_t ip, port_t min, port_t max, bool forward): min(min), max(max), tag(tag)
-    {
-        this->ip.s_addr = htonl(ip);
-    } 
+    net(port_t min, port_t max, char tag): min(min), max(max), tag(tag){}
 } net;
 
 typedef struct node {

@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <regex>
 #include <stdio.h>
-#include <string.h>
 
 static ipv4_t cidr_to_mask(byte_t cidr)
 {
@@ -51,7 +50,6 @@ Blocker::Blocker(string file)
                     min = atoi(m[3].str().c_str());
                     max = atoi(m[4].str().c_str());
                     tag = m[5].str().c_str()[0];
-                   // printf("ip: %u / %u %u - %u %c\n", ip, cidr, min, max, tag);
                     this->AddNode(cidr, ip, min, max, tag);
                 } else {
                     cerr << "Invalid IP address\n";
@@ -82,15 +80,16 @@ Blocker::Blocker(string file)
  */
 void Blocker::AddNode(byte_t cidr, ipv4_t ip, port_t min, port_t max, char tag)
 {
+
     node* n = this->GetNode(cidr);
     if(!n) {
-        port_t mask = cidr_to_mask(cidr);
+        ipv4_t mask = cidr_to_mask(cidr);
         if(mask == -1) {
             cerr << "cidr_to_mask: Invalid bit count\n";
             return;
         }
         n = new node(cidr, mask);
-        net* t = new net(ip & mask, min, max, tag);
+        net* t = new net(min, max, tag);
         n->table[ip & mask] = t;
         this->l.push_back(n);
     } else {
@@ -99,7 +98,7 @@ void Blocker::AddNode(byte_t cidr, ipv4_t ip, port_t min, port_t max, char tag)
             n->table[ip & n->mask]->max = max;
             n->table[ip & n->mask]->tag = tag;
         } else {
-            n->table[ip & n->mask] = new net(ip & n->mask, min, max, tag);
+            n->table[ip & n->mask] = new net(min, max, tag);
         }
     }
 }
@@ -148,9 +147,11 @@ node* Blocker::FindNode(ipv4_t ip)
 
 void Blocker::PrintTable()
 {
+    struct in_addr addr;
     for(node* n : l) {
         for(auto it: n->table) {
-            printf("%s/%u %u-%u %c\n", inet_ntoa(it.second->ip), it.second->min, it.second->max, it.second->tag);
+            addr.s_addr = htonl(it.first);
+            printf("%s/%u %u-%u %c\n", inet_ntoa(addr), n->cidr,it.second->min, it.second->max, it.second->tag);
         }
     }
 }
