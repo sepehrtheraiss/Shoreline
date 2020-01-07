@@ -11,6 +11,11 @@ int main(int argc, char** argv) {
     b.PrintTable();
 
     cout << "Forward: " << b.Forward(3232235776, 8000) << endl;
+    b.RemoveNet(3232235776);
+    b.PrintTable();
+    printf("remove 24\n");
+    b.RemoveNode(24);
+    b.PrintTable();
     
     return 0;
 }

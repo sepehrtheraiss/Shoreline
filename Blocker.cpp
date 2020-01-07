@@ -38,7 +38,7 @@ Blocker::Blocker(string file)
         byte_t cidr;
         port_t min, max;
         char tag;
-        /* g1: ip g2: cidr g3: min_port g4: max_port g5: char */
+        /* g1:ip  g2:cidr  g3:min_port  g4:max_port  g5:tag */
         regex e ("(.+)\\/(\\d+)\\s+(\\d+)-(\\d+)\\s+(\\w)");
         smatch m;
         while(getline(f, buff)) {
@@ -55,7 +55,7 @@ Blocker::Blocker(string file)
                     cerr << "Invalid IP address\n";
                 }
             } else {
-                cerr << "format error: " << buff << endl;
+                cerr << "Format error: " << buff << endl;
             }
             buff.clear();
         }
