@@ -12,10 +12,14 @@ typedef uint16_t port_t;
 typedef uint8_t  byte_t;
 
 typedef struct net {
+    struct in_addr ip;
     port_t min;
     port_t max;
-    bool forward;
-    net(port_t min, port_t max, bool forward): min(min), max(max), forward(forward) {} 
+    char tag;
+    net(ipv4_t ip, port_t min, port_t max, bool forward): min(min), max(max), tag(tag)
+    {
+        this->ip.s_addr = htonl(ip);
+    } 
 } net;
 
 typedef struct node {
@@ -33,15 +37,13 @@ class Blocker {
        ~Blocker(void);
         /* Reads from stream */
         void Build(int fd);
-        void AddNode(byte_t cidr, ipv4_t ip, port_t min, port_t max, bool forward);
+        void AddNode(byte_t cidr, ipv4_t ip, port_t min, port_t max, char tag);
         node* GetNode(byte_t cidr);
         void RemoveNode(byte_t cidr);
         void RemoveNet(ipv4_t ip);
         node* FindNode(ipv4_t ip);
-        bool valid(string ipv4_Port);
-        bool valid(string ipv4, string port);
-        bool valid(ipv4_t ip, port_t port);
-        void printTable(void);
+        bool Forward(ipv4_t ip, port_t port);
+        void PrintTable(void);
     private:
         /* sorted ascending by cidr notation */
         vector<node*> l;

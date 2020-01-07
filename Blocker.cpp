@@ -1,5 +1,6 @@
 #include "Blocker.hpp"
 #include <algorithm>
+#include <regex>
 #include <stdio.h>
 #include <string.h>
 
@@ -34,22 +35,38 @@ Blocker::Blocker(string file)
         //if ( (f.rdstate() & ifstream::failbit ) != 0 ) {
         int index;
         string buff;
-        node* n;
-        string ipstr;
-        ipv4_t net;
-        ipv4_t mask;
+        ipv4_t ip;
         byte_t cidr;
-        port_t port;
+        port_t min, max;
+        char tag;
+        /* g1: ip g2: cidr g3: min_port g4: max_port g5: char */
+        regex e ("(.+)\\/(\\d+)\\s+(\\d+)-(\\d+)\\s+(\\w)");
+        smatch m;
         while(getline(f, buff)) {
-            
-            
+            regex_search(buff,m,e);
+            if(m.size() == 6) {
+                ip = inet_network(m[1].str().c_str());
+                if(ip != -1) {
+                    cidr = atoi(m[2].str().c_str());
+                    min = atoi(m[3].str().c_str());
+                    max = atoi(m[4].str().c_str());
+                    tag = m[5].str().c_str()[0];
+                   // printf("ip: %u / %u %u - %u %c\n", ip, cidr, min, max, tag);
+                    this->AddNode(cidr, ip, min, max, tag);
+                } else {
+                    cerr << "Invalid IP address\n";
+                }
+            } else {
+                cerr << "format error: " << buff << endl;
+            }
+            buff.clear();
         }
 
         /* sort in ascending for quick mask comparison.
          * if higher mask matches then we dont need to 
          * check for lower masks.
          */
-            sort(it->second.begin(), it->second.end(), comp);
+         sort(this->l.begin(), this->l.end(), comp);
 
         f.close();
     } catch(const ifstream::failure& e) {
@@ -63,7 +80,7 @@ Blocker::Blocker(string file)
  *  add new node
  * else: add net
  */
-void Blocker::AddNode(byte_t cidr, ipv4_t ip, port_t min, port_t max, bool forward)
+void Blocker::AddNode(byte_t cidr, ipv4_t ip, port_t min, port_t max, char tag)
 {
     node* n = this->GetNode(cidr);
     if(!n) {
@@ -73,11 +90,17 @@ void Blocker::AddNode(byte_t cidr, ipv4_t ip, port_t min, port_t max, bool forwa
             return;
         }
         n = new node(cidr, mask);
-        net* t = new net(min, max, forward);
+        net* t = new net(ip & mask, min, max, tag);
         n->table[ip & mask] = t;
         this->l.push_back(n);
     } else {
-        n->table[ip & n->mask] = new net(min, max, forward);
+        if(n->table[ip & n->mask]) { 
+            n->table[ip & n->mask]->min = min;
+            n->table[ip & n->mask]->max = max;
+            n->table[ip & n->mask]->tag = tag;
+        } else {
+            n->table[ip & n->mask] = new net(ip & n->mask, min, max, tag);
+        }
     }
 }
 
@@ -123,23 +146,13 @@ node* Blocker::FindNode(ipv4_t ip)
     return NULL;
 }
 
-void Blocker::printTable()
+void Blocker::PrintTable()
 {
-    /*
-    in_addr ip;
-    FOREACH_TABLE
-        std::cout << "\n" << it->first << " => [\n";
-        for(node* n: it->second) {
-            ip.s_addr = htonl(n->mask);
-            cout << "cidr: " << (int)n->cidr << " mask: " << inet_ntoa(ip) << endl;
-            for(auto it : n->net) {
-               ip.s_addr = htonl(it.first);
-               cout << "\t net: " << inet_ntoa(ip) << endl;
-            }
+    for(node* n : l) {
+        for(auto it: n->table) {
+            printf("%s/%u %u-%u %c\n", inet_ntoa(it.second->ip), it.second->min, it.second->max, it.second->tag);
         }
-        cout << "]\n";
-    END_TABLE
-    */
+    }
 }
 
 Blocker::~Blocker()
@@ -147,9 +160,9 @@ Blocker::~Blocker()
     cout << "Good Bye!\n";
 }
 
-bool Blocker::valid(ipv4_t ip, port_t port)
+bool Blocker::Forward(ipv4_t ip, port_t port)
 {
    node* n = this->FindNode(ip);
    net* t = n->table[ip & n->mask];
-   return (port >= t->min && port <= t->max && t->forward);
+   return (port >= t->min && port <= t->max && (t->tag == 'f'));
 }
