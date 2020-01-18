@@ -1,26 +1,27 @@
-use Bitwise
-
 defmodule Counter do
   use Agent
 
-  def start_link(initial_value) do
-    Agent.start_link(fn -> initial_value end, name: __MODULE__)
+  def start_link(node_id) do
+    Agent.start_link(fn -> [-1, node_id] end, name: __MODULE__)
   end
 
-  def value do
-    Agent.get(__MODULE__, & &1)
-  end
-
-  def increment do
-    id = Agent.get(__MODULE__, & &1)
+  def sequence do
+    Agent.update(__MODULE__, & [hd(&1) + 1, List.last(&1)])
+    id = Agent.get(__MODULE__, & hd(&1))
     if id  == 1024 do
-	Agent.update(__MODULE__, 0)
+     Agent.update(__MODULE__, & [0, List.last(&1)])
     end
+    Agent.get(__MODULE__, & hd(&1)) 
   end
 
+  def node_id do
+    Agent.get(__MODULE__,& List.last(&1))
+  end
 end
 
 defmodule GlobalId do
+  use Bitwise
+
   @moduledoc """
   GlobalId module contains an implementation of a guaranteed globally unique id system.     
   """
@@ -32,10 +33,19 @@ defmodule GlobalId do
   @spec get_id() :: non_neg_integer
   def get_id() do
   	t = timestamp() <<< (63-41) 
-	id = node_id() <<< (63-41-10)
-	s = Counter.value()
-	Counter.increment()
-	t ||| id ||| s
+	  id = node_id() <<< (63-41-10)
+	  seq = Counter.sequence()
+
+    IO.puts seq
+    IO.puts node_id()
+	  uuid = t ||| id ||| seq
+    if byte_size(:binary.encode_unsigned(uuid)) != 8 do
+      {:ok, file} = File.open("log", [:append])
+      IO.binwrite(file, "Error: Invalid UUID #{uuid}\n" )
+      File.close(file)
+    end
+
+    uuid
   end
 
   #
@@ -50,7 +60,7 @@ defmodule GlobalId do
   """
   @spec node_id() :: non_neg_integer
   def node_id() do
-	1023
+    Counter.node_id()
   end
 
   @doc """
@@ -62,7 +72,9 @@ defmodule GlobalId do
   end
 end
 
-Counter.start_link(0)
+#node_id = String.to_integer(String.trim(IO.read(:stdio, :line)))
+
+Counter.start_link(12)
 
 IO.puts GlobalId.get_id()
 IO.puts GlobalId.get_id()
