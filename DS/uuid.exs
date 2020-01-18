@@ -1,4 +1,4 @@
-defmodule Counter do
+defmodule INode do
   use Agent
 
   def start_link(node_id) do
@@ -34,7 +34,7 @@ defmodule GlobalId do
   def get_id() do
   	t = timestamp() <<< (63-41) 
 	  id = node_id() <<< (63-41-10)
-	  seq = Counter.sequence()
+	  seq = INode.sequence()
 
     IO.puts seq
     IO.puts node_id()
@@ -60,7 +60,7 @@ defmodule GlobalId do
   """
   @spec node_id() :: non_neg_integer
   def node_id() do
-    Counter.node_id()
+    INode.node_id()
   end
 
   @doc """
@@ -74,7 +74,7 @@ end
 
 #node_id = String.to_integer(String.trim(IO.read(:stdio, :line)))
 
-Counter.start_link(12)
+INode.start_link(12)
 
 IO.puts GlobalId.get_id()
 IO.puts GlobalId.get_id()
