@@ -68,7 +68,7 @@ defmodule GlobalId do
   """
   @spec timestamp() :: non_neg_integer
   def timestamp() do 
-	1579248831791
+    :os.system_time(:milli_seconds)
   end
 end
 
