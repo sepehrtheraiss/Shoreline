@@ -72,9 +72,8 @@ defmodule GlobalId do
   end
 end
 
-#node_id = String.to_integer(String.trim(IO.read(:stdio, :line)))
-
-INode.start_link(12)
+node_id = System.argv()
+INode.start_link(String.to_integer(hd(node_id)))
 
 IO.puts GlobalId.get_id()
 IO.puts GlobalId.get_id()
