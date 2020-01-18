@@ -1,6 +1,6 @@
 #include "Blocker.hpp"
 #include <arpa/inet.h>
-
+#include <algorithm>
 int main(int argc, char** argv) {
     if(argc != 2) {
         cout << "Command: " << argv[0] << " filename\n";
@@ -16,6 +16,5 @@ int main(int argc, char** argv) {
     printf("remove 24\n");
     b.RemoveNode(24);
     b.PrintTable();
-    
     return 0;
 }
