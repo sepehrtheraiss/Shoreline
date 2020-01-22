@@ -32,20 +32,21 @@ defmodule GlobalId do
   """
   @spec get_id() :: non_neg_integer
   def get_id() do
-  	t = timestamp() <<< (63-41) 
-	  id = node_id() <<< (63-41-10)
-	  seq = INode.sequence()
+    t = timestamp() <<< (63-41) 
+    id = node_id() <<< (63-41-10)
+    seq = INode.sequence()
 
     IO.puts seq
     IO.puts node_id()
-	  uuid = t ||| id ||| seq
+
+    uid = t ||| id ||| seq
     if byte_size(:binary.encode_unsigned(uuid)) != 8 do
       {:ok, file} = File.open("log", [:append])
       IO.binwrite(file, "Error: Invalid UUID #{uuid}\n" )
       File.close(file)
     end
 
-    uuid
+    Integer.to_string(uid)
   end
 
   #
