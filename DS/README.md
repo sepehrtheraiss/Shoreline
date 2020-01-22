@@ -5,8 +5,9 @@
     A solution would be to combine the time stamp with nodes ID, but there exsist another problem.  
     What if the same node is concurrently executing the same function for two different clients ? or the function is invoked in such matter that it produces same time stamp for multiple functions ?  
 
+    # Final Solution 
     The Final solution would be to have a sequence counter, therefore for each get_id invocation we can increase the sequence number.  
-    This Would **guarentee uniqueness**, because if the same node produces the same time stamp + it's node ID, a sequence number is going to be different for each function call.  
+    This Would **guarentee uniqueness**, because if the same node produces the same time stamp plus it's node ID, a sequence number is going to be different for each function call.  
     Another question would be what if two nodes produce the same time stamp and sequence number, well each nodes ID is mutually exclusive, therefore producing a unqiue ID. 
 
     Since we are asked to use 64-bit UUID we will use the following property (Twitter Snow Flake)
@@ -23,10 +24,9 @@
     return UID
     ```
 2. Please explain how your solution achieves the desired performance i.e. 100,000 or more requests per second per node.  How did you verify this?   
-All the operations are in constant time.
-# ref
+
+    All the operations are in constant time.    
+
 How do you manage uniqueness after a node crashes and restarts?  
 How do you manage uniqueness after the entire system fails and restarts?  
-[goto] (#ref)
-
-time is monotonically increasing, 
+[solution](#Final-Solution)
