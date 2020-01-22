@@ -7,9 +7,9 @@ defmodule INode do
 
   def sequence do
     Agent.update(__MODULE__, & [hd(&1) + 1, List.last(&1)])
-    id = Agent.get(__MODULE__, & hd(&1))
-    if id  == 1024 do
-     Agent.update(__MODULE__, & [0, List.last(&1)])
+    seq = Agent.get(__MODULE__, & hd(&1))
+    if seq  == 4096 do
+     Agent.update(__MODULE__, & [0, hd(&1)])
     end
     Agent.get(__MODULE__, & hd(&1)) 
   end
@@ -30,19 +30,19 @@ defmodule GlobalId do
   Please implement the following function.
   64 bit non negative integer output   
   """
-  @spec get_id() :: non_neg_integer
+  @spec get_id() :: String  
   def get_id() do
     t = timestamp() <<< (63-41) 
     id = node_id() <<< (63-41-10)
     seq = INode.sequence()
 
-    IO.puts seq
-    IO.puts node_id()
+    IO.puts "node id: #{node_id()}" 
+    IO.puts "seq: #{seq}" 
 
     uid = t ||| id ||| seq
-    if byte_size(:binary.encode_unsigned(uuid)) != 8 do
+    if byte_size(:binary.encode_unsigned(uid)) != 8 do
       {:ok, file} = File.open("log", [:append])
-      IO.binwrite(file, "Error: Invalid UUID #{uuid}\n" )
+      IO.binwrite(file, "Error: Invalid UUID #{uid}\n" )
       File.close(file)
     end
 
