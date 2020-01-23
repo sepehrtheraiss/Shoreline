@@ -1,3 +1,4 @@
 *.o
-Ds/flask/log.txt
-Ds/flask/__pycache__
+koko/
+log.txt
+__pycache__/
