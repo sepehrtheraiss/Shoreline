@@ -1,1 +1,3 @@
 *.o
+Ds/flask/log.txt
+Ds/flask/__pycache__

@@ -8,9 +8,9 @@
     ### Final Solution 
     The Final solution would be to have a sequence counter, therefore for each get_id invocation we can increase the sequence number.  
     This Would **guarentee uniqueness**, because if the same node produces the same time stamp plus it's node ID, a sequence number is going to be different for each function call.  
-    Another question would be what if two nodes produce the same time stamp and sequence number, well each nodes ID is mutually exclusive, therefore producing a unqiue ID. 
+    Another question would be what if two nodes produce the same time stamp and sequence number, well each nodes, ID is mutually exclusive, therefore producing a unqiue ID. 
 
-    Since we are asked to use 64-bit UUID we will use the following property (Twitter Snow Flake)
+    Since we are asked to use 64-bit Unique ID we will use the following property (Twitter Snow Flake)
 
     * **Time stamp** would be calculated in mili seconds using Epoch, giving us enough time and uniqueness until January 19, 2038. Since Epoch is **signed 32-bit** the most significant bit will not be used, giving us actually 31-bit to work with. Converting seconds to mili second gives us 10 extra bit, therefore the **max size of bits** we would need to represent Epoch in mili second is **41-bits**.  
     * **Node ID's** would be represented using **unsigned 10-bits** giving us range of 0-1023. 

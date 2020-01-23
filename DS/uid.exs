@@ -73,9 +73,13 @@ defmodule GlobalId do
   end
 end
 
-node_id = System.argv()
-INode.start_link(String.to_integer(hd(node_id)))
+node_id = String.to_integer(hd(System.argv()))
+if node_id < 1024 do 
+  INode.start_link(node_id)
 
-IO.puts GlobalId.get_id()
-IO.puts GlobalId.get_id()
-IO.puts GlobalId.get_id()
+  IO.puts GlobalId.get_id()
+  IO.puts GlobalId.get_id()
+  IO.puts GlobalId.get_id()
+else
+  IO.puts "node id range 0 - 1023"
+end
