@@ -1,3 +1,4 @@
+#!/bin/python3
 with open('log.txt', 'r') as f:
     s = 0
     count = 0

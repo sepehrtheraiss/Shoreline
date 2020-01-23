@@ -9,6 +9,9 @@ app = Flask(__name__)
 counter = 0
 @app.route('/')
 def get_nodeid():
+    # milisecond is still too fast
+    # most sequential calls returns the same time stamp
+    # use nanosecond to analysis
     start = time.time_ns()
     global counter
     t = int(round(time.time() * 1000)) << (63-41)

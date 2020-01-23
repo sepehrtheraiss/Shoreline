@@ -6,10 +6,12 @@ import urllib.request
 import time
 
 
-# 1. over flow seq number
-# 2. over flow id num (use docker)
-# 3. time? -\_(`_`)_/-
+# a. check for uniqueness
+# b. over flow seq number
+# c. over flow id num (use docker)
+# d. time? -\_(`_`)_/-
 
+# Test a & b
 # Sequnce over flow test
 # 1 overflow, num should be 0
 poolSize = 1000#4096 + 1
