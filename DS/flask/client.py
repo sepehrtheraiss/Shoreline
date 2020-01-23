@@ -4,7 +4,6 @@
 import concurrent.futures
 import urllib.request
 import time
-time.sleep(15)
 
 
 # 1. over flow seq number
@@ -13,7 +12,7 @@ time.sleep(15)
 
 # Sequnce over flow test
 # 1 overflow, num should be 0
-poolSize = 4096 + 1
+poolSize = 1000#4096 + 1
 URLS = ["http://localhost:8080" for i in range(poolSize)]
 uid_table = {}
 
@@ -36,7 +35,7 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=poolSize) as executor:
         else:
             if uid_table.get(data) != None:
                 uid_table[data] += 1
-                assert True, "Duplicate uid"
+                assert False, "Duplicate uid"
             else:
                 uid_table[data] = 0
             #print(data)
