@@ -44,7 +44,7 @@ Originally wanted to this in elixir, but doing it in a familiar language was a b
         * For uniqueness, I sampled 1000 concurrent requests. Refer [client.py](flask/client.py) 
 
 * **How do you manage uniqueness after a node crashes and restarts?  
- How do you manage uniqueness after the entire system fails and restarts?**
+ How do you manage uniqueness after the entire system fails and restarts?**  
  Unique IDs are monotonically increasing and independent from other nodes.
  [solution](#Final-Solution)  
 
