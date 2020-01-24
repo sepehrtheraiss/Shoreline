@@ -48,5 +48,5 @@ Originally wanted to this in elixir, but doing it in a familiar language was a b
  * **How do you handle software defects ?**  
   The most unoticable defect would be returning *unique ID* as an **integer**, 
 some protocols such as http would only accept string, converting all given bytes to ASCII, therefore some API calls (i.e. flask) would fail.  
- Further more, some programming languages, such as Java Script, max safe integer vlaue is 2^53 - 1 [[reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)].
- So it is always safer to pass strings around.
+ Further more, some programming languages, such as Java Script, max safe integer vlaue is 2^53 - 1.  
+ So it is always safer to pass strings around. [[reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)]
