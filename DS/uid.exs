@@ -8,7 +8,7 @@ defmodule INode do
   def sequence do
     Agent.update(__MODULE__, & [hd(&1) + 1, List.last(&1)])
     seq = Agent.get(__MODULE__, & hd(&1))
-    if seq  == 4096 do
+    if seq  >= 4096 do
      Agent.update(__MODULE__, & [0, hd(&1)])
     end
     Agent.get(__MODULE__, & hd(&1)) 

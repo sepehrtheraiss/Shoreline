@@ -1,3 +1,6 @@
+Originally wanted to this in elixir, but doing it in a familiar language was a better choice for testing purposes and time.
+[server.py](flask/server.py)
+
 1. #### Please describe your solution to get_id and why it is correct i.e. guaranteed globally unique.
     
     We want to have **monotonically increasing** *Unique ID*, a naive approach would be to use time.  
@@ -8,36 +11,42 @@
     ### Final Solution 
     The Final solution would be to have a sequence counter, therefore for each get_id invocation we can increase the sequence number.  
     This Would **guarentee uniqueness**, because if the same node produces the same time stamp plus it's node ID, a sequence number is going to be different for each function call.  
-    Another question would be what if two nodes produce the same time stamp and sequence number, well each nodes, ID is mutually exclusive, therefore producing a unqiue ID. 
+    Another question would be what if two nodes produce the same time stamp and sequence number, well each nodes ID, is mutually exclusive, therefore producing a unqiue ID. 
 
     Since we are asked to use 64-bit Unique ID, we will use the following property (Twitter Snow Flake)
 
-    * **Time stamp** would be calculated in mili seconds using Epoch, giving us enough time and uniqueness until January 19, 2038. Since Epoch is **signed 32-bit** the most significant bit will not be used, giving us actually 31-bit to work with. Converting seconds to mili second gives us 10 extra bit, therefore the **max size of bits** we would need to represent Epoch in mili second is **41-bits**.  
+    * **Time stamp** would be calculated in miliseconds using Epoch, giving us enough time and uniqueness until January 19, 2038. Since Epoch is **signed 32-bit** the most significant bit will not be used, giving us actually 31-bit to work with. Converting seconds to milisecond gives us 10 extra bit, therefore the **max size of bits** we would need to represent Epoch in milisecond is **41-bits**.  
     * **Node ID's** would be represented using **unsigned 10-bits** giving us range of 0-1023. 
-    * This remains **12-bits** for **sequence number**, also unsigned.
+    * This remains **12-bits** for **sequence number**, also unsigned int, range 0-4095.
 
     ```  
     timestamp: 41-bits = time().miliseconds()
-    id: 23-bits = node.ID()
+    id: 10-bits = node.ID()
     (seq: 12-bits)++
     UID: 64-bits  = (timestamp << (63-41)) | (id << (63-41-10)) | (seq)
     return UID
     ```
-2. #### please explain how your solution achieves the desired performance i.e. 100,000 or more requests per second per node.  How did you verify this?   
+2. #### Please explain how your solution achieves the desired performance i.e. 100,000 or more requests per second per node.  How did you verify this?   
 
     * All the operations are in constant time.
-    * An approximation has been made by sampaling start time and end time of get_id() function in nanosecond.  
-    Refer to [client.py](flask/client.py) and [stats.py](flask/stats.py)
+    * An approximation has been made by sampaling start time and end time of get_id() function in nanosecond. Refer [stats.py](flask/stats.py)
 
     ```
     Average get_id() invokation:  9626  nanosecond
     Approximately  103885  calls per second (1000000000/ 9626)
     ```
+    * The test has been done locally, meaning our http server has been receiving requests as fast as possible.  
+    Since we have shown it's true for our server to handle over 100,000 request per second in **worst case**, then it's also true it can handle at least 100,000 requests per second remotely.
+3. #### Please enumerate possible failure cases and describe how your solution correctly handles each case.  How did you verify correctness?  Some example cases:  
+    1. Sequence and Node ID over flow 
+        * For Node ID, a simple check to see if ID hasn't passed 1023, tested it manualy.
+        * For Sequence number, I had to scale it down to a number I could execute it concurrently, to see if the threashold has exceeded. 
+        * For uniqueness, I sampled 1000 concurrent requests. Refer [client.py](flask/client.py) 
 
  How do you manage uniqueness after a node crashes and restarts?  
  How do you manage uniqueness after the entire system fails and restarts?  [solution](#Final-Solution)  
- * How do you handle software defects ?  
+ * **How do you handle software defects ?**  
   The most unoticable defect would be returning *unique ID* as an **integer**, 
 some protocols such as http would only accept string, converting all given bytes to ASCII, therefore some API calls (i.e. flask) would fail.  
- Further more, some programming languages, such as Java Script, safe max vlaue of integer is 2^31-1.  
+ Further more, some programming languages, such as Java Script, max safe integer vlaue is 2^53 - 1 [[reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)].
  So it is always safer to pass strings around.

@@ -5,16 +5,14 @@ import concurrent.futures
 import urllib.request
 import time
 
+TIME_MASK = 0xFFFFFFFFFFC00000
+ID_MASK = 0x3FF000
+SEQ_MASK = 0xfff
+BAD_SEQ = 4096 #10
 
-# a. check for uniqueness
-# b. over flow seq number
-# c. over flow id num (use docker)
-# d. time? -\_(`_`)_/-
-
-# Test a & b
-# Sequnce over flow test
-# 1 overflow, num should be 0
-poolSize = 1000#4096 + 1
+# checks for uniqueness and
+# over flow seq number
+poolSize = 1000 # cannot handle 4096 + 1
 URLS = ["http://localhost:8080" for i in range(poolSize)]
 uid_table = {}
 
@@ -35,10 +33,16 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=poolSize) as executor:
         except Exception as exc:
             print('%r generated an exception: %s' % (url, exc))
         else:
+            uid = int(data)
+            print("timestamp: ", (uid & TIME_MASK) >> 22, "nodeID: ", (uid & ID_MASK) >> 12, "Sequence: ", (uid & SEQ_MASK))
+
+            assert not(uid & SEQ_MASK == BAD_SEQ), "Hit bad sequence number"
+
             if uid_table.get(data) != None:
                 uid_table[data] += 1
+                print("Dup: ",data)
                 assert False, "Duplicate uid"
             else:
                 uid_table[data] = 0
-            #print(data)
+            print(data)
             #print('%r page is %d bytes' % (url, len(data)))
