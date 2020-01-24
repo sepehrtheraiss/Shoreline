@@ -40,7 +40,7 @@ Originally wanted to this in elixir, but doing it in a familiar language was a b
 3. #### Please enumerate possible failure cases and describe how your solution correctly handles each case.  How did you verify correctness?  Some example cases:  
     1. Unique ID, Sequence and Node ID over flow 
         * For Node ID, a simple check to see if ID hasn't passed 1023, tested it manually.
-        * For Sequence number, I had to scale it down to a number I could execute it concurrently, to see if the threshold has exceeded. 
+        * For Sequence number, I scaled it down to a number I could execute concurrently on a single local host, to see if the threshold has exceeded. 
         * For uniqueness, I sampled 1000 concurrent requests. Refer [client.py](flask/client.py) 
 
 * **How do you manage uniqueness after a node crashes and restarts?  
