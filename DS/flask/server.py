@@ -21,7 +21,7 @@ print("shifted ID ", id)
 
 @app.route('/')
 def get_nodeid():
-    # milisecond is still too fast
+    # millisecond is still too fast
     # most sequential calls returns the same time stamp
     # use nanosecond to analysis
     start = time.time_ns()
