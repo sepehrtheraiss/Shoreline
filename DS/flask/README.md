@@ -58,7 +58,7 @@ Based on our previous calculation of average amount of time it takes to finish t
 *let t = 0.009626 ms,  r = sequence number range and l = threshold leap*, as long as the following property holds true, we will not get a 
 	duplicate timestamp and sequence number.  
 	
-	t * (r+l) >= 1ms  
+	t * (r/l) >= 1ms  
 	
 we want the over follow to happen after a milisecond has passed, so our sequence number wont be a number that it was during the same time stamp.
 	
