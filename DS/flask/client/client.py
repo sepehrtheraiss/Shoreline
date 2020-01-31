@@ -2,6 +2,7 @@
 import asyncio
 from aiohttp import ClientSession
 import sys
+import os
 
 TIME_MASK = 0xFFFFFFFFFFC00000
 ID_MASK = 0x3FF000
@@ -9,15 +10,18 @@ SEQ_MASK = 0xfff
 BAD_SEQ = 4096
 N_REQ = 5000
 
-if len(sys.argv) < 2:
-    URL = "http://localhost:8080"
+if os.getenv("HOST") != None:
+	URL = "http://"+"192.168.1.2:8080"
 else:
-    if str.lower(sys.argv[1]) == 'l':
+    if len(sys.argv) < 2:
         URL = "http://localhost:8080"
-    elif str.lower(sys.argv[1]) == 'c':
-        URL = "https://ds-uid.herokuapp.com"
     else:
-        URL = "http://localhost:8080"
+        if str.lower(sys.argv[1]) == 'l':
+            URL = "http://localhost:8080"
+        elif str.lower(sys.argv[1]) == 'c':
+            URL = "https://ds-uid.herokuapp.com"
+        else:
+            URL = "http://localhost:8080"
 
 
 uid_table = {}
