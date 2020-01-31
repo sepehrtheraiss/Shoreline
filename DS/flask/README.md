@@ -7,6 +7,7 @@ Either use **pip3 install requirements.txt**, or
  **docker**:  
   
   1. Docker for mac or windows can be downloaded from here: [https://hub.docker.com/?overlay=onboarding](https://hub.docker.com/?overlay=onboarding)  
+for linux [https://runnable.com/docker/install-docker-on-linux](https://runnable.com/docker/install-docker-on-linux)  
 An account is already made
  	* username: sepehrtheraiss   
  	* password: ShoreLineSoftware2020  
@@ -14,7 +15,7 @@ An account is already made
  3. docker run -p 8080:8080 app
  
 ##Test
-[client/client.py](flask/client/client.py) has two urls to execute, local or cloud.   
+[client/client.py](client/client.py) has two urls to execute, local or cloud.   
 Pass 'l' for local or 'c' for cloud.  
 Please do pip3 install aiohttp
 
