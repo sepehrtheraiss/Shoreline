@@ -39,19 +39,27 @@ To over come this, each worker will be given a portion of the sequence number.
 `worker[i] = sequence-range: (i*4096/n)-(4096/n)`  
 For Example if we have 4 workers, worker[0] = {sequence-range: 0-1024} 
 
-Q2. What if a node goes down and comes back up in such matter that it will give the same time stamp and sequence number ?
+Q2. What if a node goes down and comes back up in such matter that it will give the same time stamp and sequence number ?  
 	We would need to save our sequence number to a file, and read it when the node restarts, but doing so every time is very costly.  
-	To avoid this, we can set a threshold and when it's reached, we will write to the file. When the sequence number file is read
+	To avoid this, we can set a threshold and when it's reached, we will write to the file.   
+	
+When the sequence number file is read
 	upon restart, we need to immidiately update the seq number to the next threshold and write it to the file in case the node crashes before
 	reaching the next threshold. 
-	This way we will pass over the possible duplicate seq numbers. But this could also cause another problem.
+	This way we will pass over the possible duplicate seq numbers.  
+	
+But this could also cause another problem.
 	Since every time we read from the file we advance to the next seq number, if amount of time it takes to overflow is under 1 millisecond, 
-	we risk having the same seq number with the same time stamp.  
-	Based on our previous calculation of average amount of time it takes to finish the invokation of get_id function is 9626 nanosecond.
-	9626ns to ms is 0.009626. 
-	let t = 0.009626 ms,  r = sequence number range and l = threshold leap, as long as the following property holds true, we will not get a 
-	duplicate timestamp and sequence number.
-	t * (r+l) >= 1ms
-	we want the over follow to happen after a milisecond has passed, so our sequence number wont be a number that it was during the same time stamp.
+	we risk having the same seq number with the same time stamp.   
+	 
+Based on our previous calculation of average amount of time it takes to finish the invokation of get_id function is 9626 nanosecond.
+	9626ns to ms is 0.009626.   
+	
+*let t = 0.009626 ms,  r = sequence number range and l = threshold leap*, as long as the following property holds true, we will not get a 
+	duplicate timestamp and sequence number.  
+	
+	t * (r+l) >= 1ms  
+	
+we want the over follow to happen after a milisecond has passed, so our sequence number wont be a number that it was during the same time stamp.
 	
 
