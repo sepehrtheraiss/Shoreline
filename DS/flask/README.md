@@ -30,7 +30,7 @@ Pass 'l' for local or 'c' for cloud.(default no args is local)
 
 
 
-##Questions
+## Questions
 Q1. To over come large requests per unit of time (i.e. 1,000 per milisecond or 1,000,000 per second)  
 We must use a load balancer, load balancing can be done by using an orchestration, with docker it would be swarm.  One node would become a forwarder and manager. Then the load is passed to workers.   
 This would create a **problem**, workers are just replication and seem like one from the outside,   
