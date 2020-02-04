@@ -13,11 +13,12 @@ An account is already made
  	* username: sepehrtheraiss   
  	* password: ShoreLineSoftware2020 
  2.  cd flask
- 3. docker build -t app .
- 4. docker run --net=mynet --ip=192.168.1.2 app
- 5. cd client
- 6. docker build -t client .
- 7. docker run --net=mynet --ip=192.168.1.3 client
+ 3. docker network create --subnet 192.168.1.1/24 mynet
+ 4. docker build -t app .
+ 5. docker run --net=mynet --ip=192.168.1.2 app
+ 6. cd client
+ 7. docker build -t client .
+ 8. docker run --net=mynet --ip=192.168.1.3 client
  
 ### PIP
 1. pip3 install -r requirements.txt
