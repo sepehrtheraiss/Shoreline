@@ -31,7 +31,7 @@ Pass 'l' for local or 'c' for cloud.(default no args is local)
 
 
 ## Questions
-Q1. To over come large requests per unit of time (i.e. 1,000 per milisecond or 1,000,000 per second)  
+**Q1**. To over come large requests per unit of time (i.e. 1,000 per milisecond or 1,000,000 per second)  
 We must use a load balancer, load balancing can be done by using an orchestration, with docker it would be swarm.  One node would become a forwarder and manager. Then the load is passed to workers.   
 This would create a **problem**, workers are just replication and seem like one from the outside,   
 meaning two workers worker1 & worker2 can produce the same time stamp, node id and sequence number.  
@@ -40,7 +40,7 @@ To over come this, each worker will be given a portion of the sequence number.
 `worker[i] = sequence-range: (i*4096/n)-(4096/n)`  
 For Example if we have 4 workers, worker[0] = {sequence-range: 0-1024} 
 
-Q2. What if a node goes down and comes back up in such matter that it will give the same time stamp and sequence number ?  
+**Q2**. What if a node goes down and comes back up in such matter that it will give the same time stamp and sequence number ?  
 	We would need to save our sequence number to a file, and read it when the node restarts, but doing so every time is very costly.  
 	To avoid this, we can set a threshold and when it's reached, we will write to the file.   
 	
