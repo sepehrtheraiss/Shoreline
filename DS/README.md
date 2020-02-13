@@ -1,5 +1,5 @@
 Originally wanted to this in elixir, but doing it in a familiar language was a better choice for testing purposes and time.
-[server.py](flask/server.py)
+[app.py](flask/app/app.py)
 
 1. #### Please describe your solution to get_id and why it is correct i.e. guaranteed globally unique.
     
