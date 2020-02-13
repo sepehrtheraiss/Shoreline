@@ -12,12 +12,11 @@ for linux [https://runnable.com/docker/install-docker-on-linux](https://runnable
 An account is already made  
  	* username: sepehrtheraiss   
  	* password: ShoreLineSoftware2020 
- 2. cd flask
- 3. docker network create --subnet 192.168.1.1/24 mynet
- 4. docker build -t app app
- 5. docker run --net=mynet --ip=192.168.1.2 app
- 6. docker build -t client client
- 7. docker run --net=mynet --ip=192.168.1.3 client
+ 2. docker network create --subnet 192.168.1.1/24 mynet
+ 3. docker build -t app app
+ 4. docker run --net=mynet --ip=192.168.1.2 app
+ 5. docker build -t client client
+ 6. docker run --net=mynet --ip=192.168.1.3 client
  
 ### PIP
 1. pip3 install -r app/requirements.txt
