@@ -9,9 +9,11 @@ ID_MASK = 0x3FF000
 SEQ_MASK = 0xfff
 BAD_SEQ = 4096
 N_REQ = 5000
+host = os.getenv("HOST")
+port = os.getenv("PORT")
 
-if os.getenv("HOST") != None:
-	URL = "http://"+"192.168.1.2:8080"
+if host != None and port != None:
+	URL = "http://"+host+":"+port
 else:
     if len(sys.argv) < 2:
         URL = "http://localhost:8080"

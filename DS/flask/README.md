@@ -12,16 +12,15 @@ for linux [https://runnable.com/docker/install-docker-on-linux](https://runnable
 An account is already made  
  	* username: sepehrtheraiss   
  	* password: ShoreLineSoftware2020 
- 2.  cd flask
+ 2. cd flask
  3. docker network create --subnet 192.168.1.1/24 mynet
- 4. docker build -t app .
+ 4. docker build -t app app
  5. docker run --net=mynet --ip=192.168.1.2 app
- 6. cd client
- 7. docker build -t client .
- 8. docker run --net=mynet --ip=192.168.1.3 client
+ 6. docker build -t client client
+ 7. docker run --net=mynet --ip=192.168.1.3 client
  
 ### PIP
-1. pip3 install -r requirements.txt
+1. pip3 install -r app/requirements.txt
 2. export ID=1
 3. python3 app/app.py  
 4. [client/client.py](client/client.py) has two urls to execute, local or cloud.   

@@ -1,7 +1,7 @@
 FROM python:3.7.6
 RUN mkdir /app
 WORKDIR /app
-COPY app/ /app
+COPY app.py /app
 COPY requirements.txt . 
 RUN pip install -r requirements.txt
 EXPOSE 8080
