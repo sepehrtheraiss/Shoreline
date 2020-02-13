@@ -9,7 +9,7 @@ Either use **pip3 install**, or   **docker**:
   
   1. Docker for mac or windows can be downloaded from here: [https://hub.docker.com/?overlay=onboarding](https://hub.docker.com/?overlay=onboarding)  
 for linux [https://runnable.com/docker/install-docker-on-linux](https://runnable.com/docker/install-docker-on-linux)  
-An account is already made
+An account is already made  
  	* username: sepehrtheraiss   
  	* password: ShoreLineSoftware2020 
  2.  cd flask
