@@ -46,7 +46,7 @@ Originally wanted to this in elixir, but doing it in a familiar language was a b
 * **How do you manage uniqueness after a node crashes and restarts?  
  How do you manage uniqueness after the entire system fails and restarts?**  
  Unique IDs are monotonically increasing and independent from other nodes.
- [solution](#Final-Solution)  
+ [solution](fask/README.md)  
 
  * **How do you handle software defects ?**  
   The most unnoticeable defect would be returning *unique ID* as an **integer**. 
